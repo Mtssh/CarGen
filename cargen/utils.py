@@ -215,20 +215,14 @@ def remove_ears(faces,
     :param faces: list of faces where the sub-region is a part of
     :param sub_face_idxs: list of facet indices corresponding to the sub-region
 
-    :return: list of facet indices corresponding to the sub-region with all the rears removed
+    :return: list of facet indices corresponding to the sub-region with all the ears removed
     """
 
     ears = igl.ears(faces[sub_face_idxs])[0]
     cleaned_faces = np.delete(faces[sub_face_idxs], ears, axis=0)
-    cleaned_face_idxs = []
-    # TODO: Remove this for loop.
-    for i in range(len(cleaned_faces)):
-        ind = np.where(faces == cleaned_faces[i])[0]
-        m = np.unique(ind, return_counts=True)[1]
-        o = np.where(m == 3)[0][0]
-        cleaned_face_idxs.append(ind[o])
+    cleaned_face_idxs = np.where(np.sum(np.isin(faces, cleaned_faces), axis=1) == 3)[0]
 
-    return np.array(cleaned_face_idxs)
+    return cleaned_face_idxs
 
 
 def grow_cartilage(faces,
